@@ -57,6 +57,22 @@ Namespace.prototype.run = function (fn) {
   }
 };
 
+Namespace.prototype.runGen = function* (fn) {
+  var context = this.createContext();
+  this.enter(context);
+  try {
+    yield* fn(context);
+    return context;
+  }
+  catch (exception) {
+    exception[ERROR_SYMBOL] = context;
+    throw exception;
+  }
+  finally {
+    this.exit(context);
+  }
+};
+
 Namespace.prototype.bind = function (fn, context) {
   if (!context) {
     if (!this.active) {
